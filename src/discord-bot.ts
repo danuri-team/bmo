@@ -12,6 +12,7 @@ import { uploadToR2 } from "./utils/r2.js";
 import { generateChart, ChartData } from "./utils/chart.js";
 import { maskSensitiveData } from "./utils/masking.js";
 import { getSystemPrompt } from "./prompts/system.js";
+import { startScheduler } from "./scheduler.js";
 
 const client = new Client({
   intents: [
@@ -27,6 +28,7 @@ const MESSAGE_LIMIT = 2000;
 
 client.on("ready", () => {
   console.log(`✅ Logged in as ${client.user?.tag}`);
+  startScheduler();
 });
 
 client.on("messageCreate", async (message: Message) => {
@@ -311,7 +313,7 @@ client.on("messageCreate", async (message: Message) => {
               const attachment = new AttachmentBuilder(chartBuffer, {
                 name: "chart.png",
               });
-              if (message.channel && 'send' in message.channel) {
+              if (message.channel && "send" in message.channel) {
                 await message.channel.send({
                   content: `📊 **${title}**`,
                   files: [attachment],
@@ -367,7 +369,9 @@ client.on("messageCreate", async (message: Message) => {
     try {
       await message.reactions.removeAll();
     } catch (permissionError) {
-      const botReactions = message.reactions.cache.filter(reaction => reaction.users.cache.has(client.user!.id));
+      const botReactions = message.reactions.cache.filter((reaction) =>
+        reaction.users.cache.has(client.user!.id)
+      );
       for (const reaction of botReactions.values()) {
         await reaction.users.remove(client.user!.id).catch(() => {});
       }
@@ -388,7 +392,9 @@ client.on("messageCreate", async (message: Message) => {
       await message.reactions.removeAll();
     } catch (permissionError) {
       // 권한이 없는 경우 봇이 추가한 반응만 제거
-      const botReactions = message.reactions.cache.filter(reaction => reaction.users.cache.has(client.user!.id));
+      const botReactions = message.reactions.cache.filter((reaction) =>
+        reaction.users.cache.has(client.user!.id)
+      );
       for (const reaction of botReactions.values()) {
         await reaction.users.remove(client.user!.id).catch(() => {});
       }
