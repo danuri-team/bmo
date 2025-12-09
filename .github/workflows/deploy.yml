@@ -66,6 +66,15 @@ jobs:
           echo VERSION=$VERSION
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: danuri-team
+          repositories: danuri-devops
+
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v1
 
@@ -74,7 +83,7 @@ jobs:
         with:
           repository: danuri-team/danuri-devops
           ref: main
-          token: ${{ secrets.ACTION_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           path: danuri-devops
 
       - name: Update Kubernetes resources
