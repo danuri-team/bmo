@@ -1,72 +1,70 @@
-# Build stage
-FROM node:20-alpine AS builder
+# BUILD
 
-# Install build dependencies for canvas (chartjs-node-canvas)
-RUN apk add --no-cache \
+FROM node:20-slim AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     make \
     g++ \
-    pkgconfig \
-    cairo-dev \
-    pango-dev \
-    libjpeg-turbo-dev \
-    giflib-dev \
-    librsvg-dev \
-    pixman-dev
+    pkg-config \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    libpixman-1-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy package files
 COPY package.json yarn.lock ./
 
-# Install dependencies
 RUN yarn install --frozen-lockfile
 
-# Copy source code
 COPY tsconfig.json ./
 COPY src ./src
 
-# Build TypeScript
 RUN yarn build
 
-# Production stage
-FROM node:20-alpine AS runner
+# PRODUCTION
 
-# Install runtime dependencies for canvas
-RUN apk add --no-cache \
-    cairo \
-    pango \
-    libjpeg-turbo \
-    giflib \
-    librsvg \
-    pixman \
+FROM node:20-slim AS runner
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libjpeg62-turbo \
+    libgif7 \
+    librsvg2-2 \
+    libpixman-1-0 \
     fontconfig \
-    ttf-dejavu \
-    curl \
-    gnupg
+    fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apk add --no-cache --virtual .build-deps \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     make \
     g++ \
-    pkgconfig \
-    cairo-dev \
-    pango-dev \
-    libjpeg-turbo-dev \
-    giflib-dev \
-    librsvg-dev \
-    pixman-dev
+    pkg-config \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    libpixman-1-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy package files
 COPY package.json yarn.lock ./
 
-# Install production dependencies only
 RUN yarn install --frozen-lockfile --production \
-    && apk del .build-deps
+    && apt-get purge -y python3 make g++ pkg-config \
+       libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy built files from builder
 COPY --from=builder /app/dist ./dist
 
 ENV NODE_ENV=production
