@@ -1,0 +1,31 @@
+{
+  "name": "fourcut-bmo",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/discord-bot.ts",
+    "build": "tsc",
+    "start": "node dist/discord-bot.js",
+    "daily-report": "tsx src/daily-report.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.698.0",
+    "@aws-sdk/client-s3": "^3.698.0",
+    "@aws-sdk/s3-request-presigner": "^3.698.0",
+    "chartjs-node-canvas": "^4.1.6",
+    "dayjs": "^1.11.13",
+    "dayjs-ext": "^2.2.0",
+    "dedent": "^1.5.3",
+    "discord.js": "^14.16.3",
+    "dotenv": "^17.2.3",
+    "mysql2": "^3.11.5",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.3",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}
