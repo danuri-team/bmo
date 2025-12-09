@@ -32,7 +32,7 @@ RUN yarn build
 # Production stage
 FROM node:20-alpine AS runner
 
-# Install runtime dependencies for canvas and Doppler CLI
+# Install runtime dependencies for canvas
 RUN apk add --no-cache \
     cairo \
     pango \
@@ -45,13 +45,26 @@ RUN apk add --no-cache \
     curl \
     gnupg
 
+RUN apk add --no-cache --virtual .build-deps \
+    python3 \
+    make \
+    g++ \
+    pkgconfig \
+    cairo-dev \
+    pango-dev \
+    libjpeg-turbo-dev \
+    giflib-dev \
+    librsvg-dev \
+    pixman-dev
+
 WORKDIR /app
 
 # Copy package files
 COPY package.json yarn.lock ./
 
 # Install production dependencies only
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --frozen-lockfile --production \
+    && apk del .build-deps
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
