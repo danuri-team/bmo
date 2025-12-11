@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ghcr.io/danuri-team/bmo
 
 jobs:
   build:
@@ -40,7 +40,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix=
+            type=sha,prefix=,format=short
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
@@ -61,7 +61,7 @@ jobs:
       - name: Get version
         id: image
         run: |
-          VERSION=$(echo ${{ github.sha }} | cut -c1-8)
+          VERSION=$(echo ${{ github.sha }} | cut -c1-7)
           echo VERSION=$VERSION
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
