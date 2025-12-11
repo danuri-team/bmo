@@ -304,27 +304,54 @@ client.on("messageCreate", async (message: Message) => {
             await updateMessage(responseText + "\n\n" + statusMessage, true);
 
             try {
+              // 입력 데이터 검증 및 로깅
+              console.log("차트 생성 시작:", {
+                title,
+                type,
+                dataLabels: data?.labels,
+                datasetCount: data?.datasets?.length,
+                datasets: data?.datasets?.map((d: any) => ({
+                  label: d.label,
+                  dataLength: d.data?.length,
+                  data: d.data
+                }))
+              });
+
               const chartBuffer = await generateChart(
                 title,
                 type,
                 data as ChartData
               );
 
+              console.log("차트 버퍼 생성 완료:", {
+                bufferSize: chartBuffer?.length,
+                isBuffer: Buffer.isBuffer(chartBuffer)
+              });
+
               const attachment = new AttachmentBuilder(chartBuffer, {
                 name: "chart.png",
               });
+
               if (message.channel && "send" in message.channel) {
                 await message.channel.send({
                   content: `📊 **${title}**`,
                   files: [attachment],
                 });
+                console.log("차트 Discord 전송 완료");
               }
 
-              toolResult = { success: true };
+              toolResult = { success: true, message: "차트 생성 및 전송 완료" };
             } catch (err) {
+              console.error("차트 생성 실패 - 상세 에러:", {
+                errorMessage: err instanceof Error ? err.message : String(err),
+                errorStack: err instanceof Error ? err.stack : undefined,
+                inputData: { title, type, data }
+              });
+
               toolResult = {
                 success: false,
                 error: err instanceof Error ? err.message : String(err),
+                details: err instanceof Error ? err.stack : "스택 트레이스 없음"
               };
             }
           }
