@@ -12,7 +12,7 @@
     "@aws-sdk/client-bedrock-runtime": "^3.698.0",
     "@aws-sdk/client-s3": "^3.698.0",
     "@aws-sdk/s3-request-presigner": "^3.698.0",
-    "chart.js": "^4.4.6",
+    "chart.js": "^3.9.1",
     "chartjs-node-canvas": "^4.1.6",
     "dayjs": "^1.11.13",
     "dayjs-ext": "^2.2.0",
