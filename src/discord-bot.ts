@@ -28,7 +28,7 @@ const MESSAGE_LIMIT = 2000;
 
 client.on("ready", () => {
   console.log(`✅ Logged in as ${client.user?.tag}`);
-  startScheduler();
+  // startScheduler();
 });
 
 client.on("messageCreate", async (message: Message) => {
